@@ -6,7 +6,7 @@ from image_processing_helper_functions import encode_image, getResponse
 # If it fails for any reason (such as, timeout from the API, inconclusive results, etc), it labels it as ERROR to be reprocessed later
 
 # It is intenteded to be ran once, in order to convert it into a file with json objects, with the string-fied images
-
+# Has to be ran from "data_cleaning" directory (type "cd data_cleaning" on terminal)
 neutral_arr = []
 fo = open("./results/unknown_emotion_images.txt", "w")
 
