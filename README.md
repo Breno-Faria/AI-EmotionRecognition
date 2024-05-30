@@ -8,7 +8,7 @@
 
 # Content
 
-### plot.py
+## plot.py
 
 Running plot.py without arguments will create every plot required for part 1 of the project. The argument options are as follows:
 
