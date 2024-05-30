@@ -1,4 +1,4 @@
-#!/Users/breno/Desktop/code/comp472/project/venv/bin/python3
+#!/Users/pfh/artificial-intelligence/AI-EmotionRecognition/venv/bin/python3.12
 # -*- coding: utf-8 -*-
 import re
 import sys

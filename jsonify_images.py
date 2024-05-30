@@ -10,7 +10,6 @@ def encode_image(image_path):
 
 def write_json(image_directory, write_directory, emotions, num_per_emotion):
 
-
     for emotion in emotions:
         emotion_read_path = image_directory + emotion + "/"
         emotion_write_path = write_directory + emotion + ".json"

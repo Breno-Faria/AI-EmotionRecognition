@@ -24,7 +24,6 @@ def get_sorted_data(file_path):
     data = get_data(file_path)
     if data == None:
         return
-
     sorted_data = []
     emotions = get_emotion_stats(file_path)
     if emotions == None:
@@ -128,6 +127,17 @@ def plot_all_class_frequencies(sorted_imgs):
         plot_class_frequency(images, img_class)
 
 if __name__ == "__main__":
+    frequencies = False
+    histograms = {
+        "neutral": False,
+        "happy": False,
+        "engaged": False,
+        "angry": False
+    }
+
+
+    if len(sys.argv) < 2:
+        
     emotions = ["neutral", "happy", "angry"]
     filename = "data/data.json"
     plot_emotions(get_emotion_stats(filename))

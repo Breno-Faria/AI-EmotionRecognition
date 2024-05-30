@@ -50,7 +50,7 @@ if len(engaged_arr) > 0:
     engaged_output.seek(0)
     json.dump(engaged_arr, engaged_output,indent=6)
 if len(neutral_arr) > 0:
-    neutral_arr.seek(0)
+    neutral_output.seek(0)
     json.dump(neutral_arr, neutral_output,indent=6)
 if len(unknown_arr) > 0:
     json.dump(unknown_arr, unknown_output,indent=6)
