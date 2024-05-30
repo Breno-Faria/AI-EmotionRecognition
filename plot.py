@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 import base64
 import matplotlib.pyplot as plt
 import numpy as np
@@ -126,27 +127,48 @@ def plot_all_class_frequencies(sorted_imgs):
         img_class = images[0]["emotion"]
         plot_class_frequency(images, img_class)
 
+
+random_sample_amt = 15
 if __name__ == "__main__":
-    frequencies = False
-    histograms = {
-        "neutral": False,
-        "happy": False,
-        "engaged": False,
-        "angry": False
+
+    arguments = {
+        "-f": False,
+        "-h": False,
+        "-r": False,
+        "-a": True 
     }
 
+    for argument in sys.argv[1:]:
+        if argument not in arguments.keys():
+            print("Unknown argument", argument)
+            exit(1)
+        arguments[argument] = True
+        arguments["-a"] = False
 
-    if len(sys.argv) < 2:
+
+
         
     emotions = ["neutral", "happy", "angry"]
     filename = "data/data.json"
-    plot_emotions(get_emotion_stats(filename))
-    #img_array = get_img_array(filename)
-    # np.set_printoptions(threshold=100)
-    # data = get_sorted_data(filename)
-    # if data != None:
-    #     plot_all_class_frequencies(data)
+    if arguments["-f"] or arguments["-a"]:
+        print("frequencies")
+        # plot_emotions(get_emotion_stats(filename))
+
+    if arguments["-h"] or arguments["-a"]:
+        print("histograms")
+        # img_array = get_img_array(filename)
+        # np.set_printoptions(threshold=100)
+        # data = get_sorted_data(filename)
+        # if data != None:
+        #     plot_all_class_frequencies(data)
         # for emotion in emotions:
         #     plot_class_frequency(data, emotion)
-    #random_image_sample("archive/test/neutral", 10)
+
+    if arguments["-r"] or arguments["-a"]:
+        print("sample")
+        # random_image_sample("archive/test/neutral", 10)
+        # random_image_sample("archive/test/", 10)
+        # random_image_sample("archive/test/neutral", 10)
+        # random_image_sample("archive/test/neutral", 10)
+
     plt.show()
