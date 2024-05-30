@@ -31,6 +31,7 @@ with open('./results/unknown_emotion_images.txt') as file:
         emotionStr = "ERROR"
 
         resp = getResponse(imgStr)
+        print(resp)
         if 'choices' in resp and isinstance(resp['choices'], list) and len(resp['choices']) > 0:
             emotionStr = resp['choices'][0]['message']['content']
 
