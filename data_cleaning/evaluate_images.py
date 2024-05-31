@@ -24,17 +24,22 @@ unknown_arr = []
 
 # Iterates over file with images that haven't been evaluated yet. Tries getting a response, if it is succesful, it appends it to the correspondent
 # emotion array. Otherwise, it remains in the "unknown" list.
+
+i = 0
 with open('./results/unknown_emotion_images.txt') as file:
     picsArray = json.load(file)
     for pic in picsArray:
         imgStr = pic["img"]
         emotionStr = "ERROR"
 
-        resp = getResponse(imgStr)
-        print(resp)
-        if 'choices' in resp and isinstance(resp['choices'], list) and len(resp['choices']) > 0:
-            emotionStr = resp['choices'][0]['message']['content']
-
+        if i < 25:
+            resp = getResponse(imgStr)
+            print(resp)
+            if 'choices' in resp and isinstance(resp['choices'], list) and len(resp['choices']) > 0:
+                emotionStr = resp['choices'][0]['message']['content']
+            else:
+                i +=1
+    
         if emotionStr.lower() == "engaged":
             pic["emotion"] = "engaged"
             engaged_arr.append(pic)
