@@ -2,6 +2,10 @@ import base64
 import os
 import requests
 
+
+# OPENAI_API_KEY="sk-proj-ALbND6wQU00lHOo6P7NHT3BlbkFJlDpnztRQjB9bKmI47KQJ"
+#  peter
+# f"Bearer {api_key}"
 def encode_image(image_path):
   with open(image_path, "rb") as image_file:
     return base64.b64encode(image_file.read()).decode('utf-8')
@@ -11,7 +15,7 @@ def getResponse(image_data_b64):
 
     headers = {
         "Content-Type": "application/json",
-        "Authorization": f"Bearer {api_key}"
+        "Authorization": "Bearer sk-proj-ALbND6wQU00lHOo6P7NHT3BlbkFJlDpnztRQjB9bKmI47KQJ"
     }
 
     payload = {
