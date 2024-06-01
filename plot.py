@@ -104,15 +104,18 @@ def plot_class_frequency(imgs, image_class):
     images = np.array([])
     for img in imgs:
         i=0
-        if img["emotion"] == image_class:
-            i += 1
-            binary_image = base64.b64decode(img["img"])
-            image = Image.open(BytesIO(binary_image))
-            img_arr = np.array(image).flatten()
-            print(len(img_arr))
-            images = np.concatenate((images, img_arr))
-            if i >= 10:
-                break
+        try:
+            if img["emotion"] == image_class:
+                i += 1
+                binary_image = base64.b64decode(img["img"])
+                image = Image.open(BytesIO(binary_image))
+                img_arr = np.array(image).flatten()
+                print(len(img_arr))
+                images = np.concatenate((images, img_arr))
+                if i >= 10:
+                    break
+        except:
+            print("fuck")
 
     plt.figure(figsize=(10, 6))
     plt.hist(images, bins=256, range=(0, 255), edgecolor='black', alpha=0.75)
@@ -149,26 +152,26 @@ if __name__ == "__main__":
 
         
     emotions = ["neutral", "happy", "angry"]
-    filename = "data/data.json"
+    filename = "data.json"
     if arguments["-f"] or arguments["-a"]:
         print("frequencies")
-        # plot_emotions(get_emotion_stats(filename))
+        plot_emotions(get_emotion_stats(filename))
 
     if arguments["-h"] or arguments["-a"]:
         print("histograms")
-        # img_array = get_img_array(filename)
-        # np.set_printoptions(threshold=100)
-        # data = get_sorted_data(filename)
-        # if data != None:
-        #     plot_all_class_frequencies(data)
-        # for emotion in emotions:
-        #     plot_class_frequency(data, emotion)
+        img_array = get_img_array(filename)
+        np.set_printoptions(threshold=100)
+        data = get_sorted_data(filename)
+        if data != None:
+            plot_all_class_frequencies(data)
+        for emotion in emotions:
+            plot_class_frequency(data, emotion)
 
     if arguments["-r"] or arguments["-a"]:
         print("sample")
-        # random_image_sample("archive/test/neutral", 10)
-        # random_image_sample("archive/test/", 10)
-        # random_image_sample("archive/test/neutral", 10)
-        # random_image_sample("archive/test/neutral", 10)
+        random_image_sample("archive/test/neutral", 10)
+        random_image_sample("archive/test/", 10)
+        random_image_sample("archive/test/neutral", 10)
+        random_image_sample("archive/test/neutral", 10)
 
     plt.show()
