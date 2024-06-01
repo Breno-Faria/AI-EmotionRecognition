@@ -9,6 +9,18 @@ from io import BytesIO
 from PIL import Image
 import jsonify_images
 
+def image_decoder(img_json_array):
+    
+    emptyFolder("./decoding_images/output_images")
+ 
+    for i, image in enumerate(img_json_array):
+        with open(f"./decoding_images/output_images/img{i}.png", "wb") as fo:
+            pngImg = base64.b64decode(image["img"])
+            fo.write(pngImg)
+
+def emptyFolder(path):
+    for img in os.listdir(path):
+        os.remove(path+"/"+img)
     
 def get_data(file_path):
     data = []
@@ -85,6 +97,33 @@ def random_image_sample(dir, num_files):
     for file in sample_files:
         encoded_image = jsonify_images.encode_image(os.path.join(dir, file))
         plot_pixel_frequency(encoded_image, file)
+
+def random_sample_from_dir(sorted_data):
+    random_sample = []
+    for img_class in sorted_data:
+        print(img_class[0])
+        random.shuffle(img_class)
+        random_sample += img_class[:15]
+
+    image_decoder(random_sample)
+    for i, image in enumerate(random_sample):
+        plot_json_pixel_frequency(image, i)
+
+    
+
+def plot_json_pixel_frequency(image_object, index):
+    img = base64.b64decode(image_object["img"])
+    image = Image.open(BytesIO(img))
+    img_arr = np.array(image).flatten()
+    plt.figure(figsize=(10, 6))
+    plt.hist(img_arr, bins=256, range=(0, 255), edgecolor='black', alpha=0.75)
+    plt.title(f'Pixel Intensity Distribution')
+    plt.xlabel('Pixel Intensity')
+    plt.ylabel('Frequency')
+    plt.grid(True)
+    plt.savefig("figures/figure_" + str(index) + ".png", dpi=25)
+
+
 
 
 def plot_pixel_frequency(img, title):
@@ -164,14 +203,13 @@ if __name__ == "__main__":
         data = get_sorted_data(filename)
         if data != None:
             plot_all_class_frequencies(data)
-        for emotion in emotions:
-            plot_class_frequency(data, emotion)
+        # for emotion in emotions:
+        #     plot_class_frequency(data, emotion)
 
     if arguments["-r"] or arguments["-a"]:
         print("sample")
-        random_image_sample("archive/test/neutral", 10)
-        random_image_sample("archive/test/", 10)
-        random_image_sample("archive/test/neutral", 10)
-        random_image_sample("archive/test/neutral", 10)
+        data = get_sorted_data(filename)
+        print(len(data))
+        random_sample_from_dir(data)
 
     plt.show()
