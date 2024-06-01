@@ -7,7 +7,7 @@ import numpy as np
 import random
 from io import BytesIO
 from PIL import Image
-import jsonify_images
+import collect_data 
 
 def image_decoder(img_json_array):
     
@@ -95,7 +95,7 @@ def random_image_sample(dir, num_files):
         raise ValueError("Not enough files for given sample number")
     sample_files = random.sample(all_files, num_files)
     for file in sample_files:
-        encoded_image = jsonify_images.encode_image(os.path.join(dir, file))
+        encoded_image = collect_data.encode_image(os.path.join(dir, file))
         plot_pixel_frequency(encoded_image, file)
 
 def random_sample_from_dir(sorted_data):
@@ -170,6 +170,12 @@ def plot_all_class_frequencies(sorted_imgs):
         plot_class_frequency(images, img_class)
 
 
+def collect_sample(sorted_imgs):
+    sample = []
+    for img_class in sorted_imgs:
+        sample += img_class[:25]
+        image_decoder(sample)
+
 random_sample_amt = 15
 if __name__ == "__main__":
 
@@ -177,6 +183,7 @@ if __name__ == "__main__":
         "-f": False,
         "-h": False,
         "-r": False,
+        "-d": False,
         "-a": True 
     }
 
@@ -184,8 +191,8 @@ if __name__ == "__main__":
         if argument not in arguments.keys():
             print("Unknown argument", argument)
             exit(1)
-        arguments[argument] = True
         arguments["-a"] = False
+        arguments[argument] = True
 
 
 
@@ -193,11 +200,11 @@ if __name__ == "__main__":
     emotions = ["neutral", "happy", "angry"]
     filename = "data.json"
     if arguments["-f"] or arguments["-a"]:
-        print("frequencies")
+        print("Displaying frequency bar chart")
         plot_emotions(get_emotion_stats(filename))
 
     if arguments["-h"] or arguments["-a"]:
-        print("histograms")
+        print("Displaying class histograms")
         img_array = get_img_array(filename)
         np.set_printoptions(threshold=100)
         data = get_sorted_data(filename)
@@ -207,9 +214,15 @@ if __name__ == "__main__":
         #     plot_class_frequency(data, emotion)
 
     if arguments["-r"] or arguments["-a"]:
-        print("sample")
+        print("Displaying random sample histograms")
         data = get_sorted_data(filename)
         print(len(data))
         random_sample_from_dir(data)
+
+    if arguments["-d"] or arguments["-a"]:
+        print("Displaying dataset sample")
+        data = get_sorted_data(filename)
+        collect_sample(data)
+
 
     plt.show()
