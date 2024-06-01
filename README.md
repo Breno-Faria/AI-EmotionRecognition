@@ -8,7 +8,14 @@
 
 # Content
 
+## collect_data.py
+
+
+This script collect all of our data together, formatted with JSON, and aggregating them into data.json. It collects all of the ~370 focused images from chat-gpt, the remaining sorted by hand, and 500 neutral images. It then converts the first 500 happy and angry images from the dataset we retrieved online. Once they are collected into a single array, these 2000 json objects are dumped into data.json. 
+
 ## plot.py
+
+Plot.py collects images from our JSON formatted dataset and plots these using matplotlib. It also contains some helper functions to collect the data from our dataset, either sorted into four arrays per each emotion or as one large array. 
 
 Running plot.py without arguments will create every plot required for part 1 of the project. The argument options are as follows:
 
