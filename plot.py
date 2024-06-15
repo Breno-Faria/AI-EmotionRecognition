@@ -101,7 +101,6 @@ def random_image_sample(dir, num_files):
 def random_sample_from_dir(sorted_data):
     random_sample = []
     for img_class in sorted_data:
-        print(img_class[0])
         random.shuffle(img_class)
         random_sample += img_class[:15]
 
@@ -149,12 +148,11 @@ def plot_class_frequency(imgs, image_class):
                 binary_image = base64.b64decode(img["img"])
                 image = Image.open(BytesIO(binary_image))
                 img_arr = np.array(image).flatten()
-                print(len(img_arr))
                 images = np.concatenate((images, img_arr))
                 if i >= 10:
                     break
         except:
-            print("fuck")
+            print("Failed to find class from json object")
 
     plt.figure(figsize=(10, 6))
     plt.hist(images, bins=256, range=(0, 255), edgecolor='black', alpha=0.75)
