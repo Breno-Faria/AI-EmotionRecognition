@@ -1,6 +1,11 @@
 #accuracy = (confusion_matrix[0][0] + confusion_matrix[1][1]) / 2
-
+from multiprocessing import freeze_support
+import train
 import numpy as np
+import torch
+from model import BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood
+from PIL import Image
+import torchvision.transforms as transforms
 
 def generate_confusion_matrix(model, labeled_data):
 
@@ -51,3 +56,29 @@ def generate_metrics_row(confusion_matrix):
 
     res = [precision, recall, f1]
     return res
+
+
+# Load the model
+model = BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood()
+model.load_state_dict(torch.load('model.pth'))
+model.eval()
+
+# Define preprocessing transformations (same as in training)
+preprocess = transforms.Compose([
+    transforms.Resize((48, 48)),  # Resize image to match training input size
+    transforms.ToTensor(),  # Convert image to tensor
+    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))  # Normalize image
+])
+
+# Load and preprocess the image
+image_path = './dataset/angry/img0.png'
+image = Image.open(image_path).convert('RGB')
+input_tensor = preprocess(image)
+input_tensor = input_tensor.unsqueeze(0)  # Add batch dimension
+
+# Perform inference
+with torch.no_grad():  # Disable gradient computation
+    output = model(input_tensor)
+
+_, predicted_class = torch.max(output, 1)
+print(f'Predicted class: {predicted_class.item()}')
