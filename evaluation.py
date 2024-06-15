@@ -33,7 +33,7 @@ def generate_micro_metrics_row(confusion_matrix_array):
 
 def generate_macro_metrics_row(confusion_matrix_array):
 
-    metrics_results = np.arary([0.0, 0.0, 0.0])
+    metrics_results = np.array([0.0, 0.0, 0.0])
 
     for confusion_matrix in confusion_matrix_array:
         metrix_results += generate_metrics_row(confusion_matrix)
