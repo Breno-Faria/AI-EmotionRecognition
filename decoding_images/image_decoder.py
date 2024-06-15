@@ -15,3 +15,5 @@ def image_decoder(img_json_array):
 def emptyFolder(path):
     for img in os.listdir(path):
         os.remove(path+"/"+img)
+
+
