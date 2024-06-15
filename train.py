@@ -4,7 +4,6 @@ from torch.utils.data import DataLoader
 import torch
 import torch.nn as nn
 import torchvision.transforms as transforms
-import torchvision.datasets as datasets
 
 
 
@@ -23,11 +22,6 @@ def train_model():
     print("Loaded Dataset")
 
     num_epocs = 10
-    train_fraction = 1400
-    validation_fraction = 300
-    test_fraction = 300
-    batch_size = int(train_fraction / num_epocs)
-    assert(train_fraction + validation_fraction + test_fraction == 2000)
 
     train_loader = DataLoader(trainset, batch_size=100, shuffle=True, num_workers=2)
     validation_loader = DataLoader(validationset, batch_size=25, shuffle=False, num_workers=2)
@@ -49,9 +43,6 @@ def train_model():
         batch_loss = 0
         total_batches = 0
         for i, (images, labels) in enumerate(train_loader):
-            # print(f"Batch {i}:")
-            # print(f"  Images shape: {images.shape}")
-            # print(f"  Labels shape: {labels.shape}")
             outputs = model(images)
             loss = criterion(outputs, labels)
             loss_list.append(loss.item())
@@ -69,21 +60,9 @@ def train_model():
                 _, predicted = torch.max(outputs.data, 1)
                 total += labels.size(0)
                 correct += (predicted == labels).sum().item()
-            print('accuracy on validation set: {} %'
-              .format((correct / total) * 100))
+            print(f'Epoch [{epoc+1}/{num_epocs}], Validation Accuracy: {(correct/total)*100}')
         model.train()
 
-        # for i, (images, labels) in enumerate(validation_loader):
-        #     outputs = model(images)
-        #     loss = criterion(outputs, labels)
-        #     loss_list.append(loss.item())
-        #     
-        #     total = labels.size(0)
-        #     _, predicted = torch.max(outputs.data, 1)
-        #     correct = (predicted == labels).sum().item()
-        #     accuracy_list.append(correct / total)
-        #
-        #print(f'Epoch: [{epoc+1}/{num_epocs}], Loss: {loss.item()}, Validation Accuracy: {correct / total}')
 
     with torch.no_grad():
         correct = 0
@@ -99,3 +78,18 @@ def train_model():
 
 if __name__ == "__main__":
     train_model()
+
+
+
+
+# for i, (images, labels) in enumerate(validation_loader):
+#     outputs = model(images)
+#     loss = criterion(outputs, labels)
+#     loss_list.append(loss.item())
+#     
+#     total = labels.size(0)
+#     _, predicted = torch.max(outputs.data, 1)
+#     correct = (predicted == labels).sum().item()
+#     accuracy_list.append(correct / total)
+#
+#print(f'Epoch: [{epoc+1}/{num_epocs}], Loss: {loss.item()}, Validation Accuracy: {correct / total}')

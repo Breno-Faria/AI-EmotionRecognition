@@ -1,10 +1,10 @@
 import json
+import random
 import base64
 import torch
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset
 from PIL import Image
 from io import BytesIO
-import torchvision.transforms as transforms
 
 class EmotionDataset(Dataset):
     def __init__(self, json_array, transform=None):
@@ -39,7 +39,7 @@ def loadData(json_file, num_training=1400, num_validation=300, num_testing=300):
     data = []
     with open(json_file) as f:
         data = json.load(f)
-    training_idx = 0
+    random.shuffle(data)
     validation_idx = num_training
     testing_idx = num_training + num_validation
     training = data[:validation_idx]
