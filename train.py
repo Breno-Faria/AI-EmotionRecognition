@@ -123,12 +123,12 @@ def train_model(training_batch_size=100, kernel_size=7, learning_rate=0.001, mod
 if __name__ == "__main__":
     if len(sys.argv) == 2:
         if sys.argv[1].endswith('.pth'):
-            train_model(model_name=sys.argv[1])
+            train_model(model_name=sys.argv[1], kernel_size=7)
         else:
             print("Invalid file type, must end with .pth.")
     elif len(sys.argv) == 3:
         if sys.argv[1] == '-v' and sys.argv[2].endswith('.pth'):
-            train_model(variant=True, model_name=sys.argv[2])
+            train_model(variant=True, model_name=sys.argv[2], kernel_size=4)
         else:
             print('Invalid Arguments.')
     else:

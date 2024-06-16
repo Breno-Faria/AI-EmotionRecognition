@@ -9,7 +9,10 @@ from dataset import loadData
 import base64
 import io
 
-def generate_micro_metrics_row(confusion_matrix):
+
+
+def _generate_micro_metrics_row(confusion_matrix):
+
 
     num_classes = len(confusion_matrix)
 
@@ -109,7 +112,7 @@ def generate_metrics_row(confusion_matrix):
         else:
             f1_measure[i] = 0.0
 
-    return precision, f1_measure, recall
+    return precision, f1_measure, recall, accuracy
     
     
 
@@ -137,7 +140,7 @@ def predict_emotion(model, img):
     return predicted_class.item()
 
 
-def generate_confusion_matrix(variant=0):
+def generate_confusion_matrices(variant=0):
     labels = {
             "happy": 0,
             "angry": 1,
@@ -157,6 +160,10 @@ def generate_confusion_matrix(variant=0):
         model = BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood(kernel_size=7)
         model.load_state_dict(torch.load('models/model_variant2.pth'))
 
+    if variant == 3:
+        model = BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood_Variant1(kernel_size=7)
+        model.load_state_dict(torch.load('models/model_variant3.pth'))
+
 
     _, _, testing_data_arr = loadData("./data.json")
 
@@ -168,15 +175,75 @@ def generate_confusion_matrix(variant=0):
         [0, 0, 0, 0]
     ]
 
+    micro_confusion_matrices = {
+        0: [
+            [0, 0],
+            [0, 0],
+        ],
+        1: [
+            [0, 0],
+            [0, 0],
+        ],
+        2: [
+            [0, 0],
+            [0, 0],
+        ],
+        3: [
+            [0, 0],
+            [0, 0],
+        ],
+    }
+
     for labeled_data in testing_data_arr:
-        predicted_class = predict_emotion(model, base64.b64decode(labeled_data['img']))
-        confusion_matrix[int(predicted_class)][labels[labeled_data['emotion']]] +=1
+        predicted_class = int(predict_emotion(model, base64.b64decode(labeled_data['img'])))
+        true_class = labels[labeled_data['emotion']] 
+        confusion_matrix[predicted_class][true_class] +=1
+
+        if predicted_class == true_class: # Correct evaluation
+            for emotion in micro_confusion_matrices.keys():
+                emotion_micro_matrix = micro_confusion_matrices[emotion]
+                if emotion == predicted_class:
+                    emotion_micro_matrix[0][0] += 1 # Increase true positive
+                else:
+                    emotion_micro_matrix[1][1] += 1 # Increase true negative
+        else: # Incorrect evaluation
+            for emotion in micro_confusion_matrices.keys():
+                emotion_micro_matrix = micro_confusion_matrices[emotion]
+                if emotion == true_class:
+                    emotion_micro_matrix[1][0] += 1 # Increase false negative
+                elif emotion == predicted_class:
+                    emotion_micro_matrix[0][1] += 1 # Increase false positive
+                else:
+                    emotion_micro_matrix[1][1] += 1 # Increase true negative
+                    
+
 
     
-    return confusion_matrix
+    return confusion_matrix, micro_confusion_matrices
 
 if __name__ == "__main__":
-    for i in range(3):
+
+    for i in range(4):
+        print('\n')
         print(f"Variant {i}")
-        matrix = generate_confusion_matrix(variant=i)
-        print(generate_micro_metrics_row(matrix))
+        general_matrix, micro_matrices = generate_confusion_matrices(variant=i)
+        precision_vector, f1_vector, recall_vector, accuracy= generate_metrics_row(general_matrix)
+        for emotion in micro_matrices.keys():
+            for row in micro_matrices[emotion]:
+                print(row)
+            print()
+
+        for row in general_matrix:
+            print(row)
+        print()
+        print("Accuracy:", accuracy)
+        print("Precision:", precision_vector) 
+        print("F1:", f1_vector) 
+        print("Recall:", recall_vector)
+        precision = sum(precision_vector) / 4
+        f1 = sum(f1_vector) / 4
+        recall = sum(recall_vector) / 4
+        print(f'Precision {precision}')
+        print(f'f1 {f1}')
+        print(f'recall {recall}')
+   

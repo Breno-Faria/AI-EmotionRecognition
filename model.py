@@ -81,20 +81,17 @@ class BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood
         )
 
         width_map = {
-            3: 9,
-            4: 7,
-            5: 6,
-            6: 4,
-            7: 3,
+            4: 3200,
+            7: 2592,
         }
         if kernel_size in width_map.keys():
             width = width_map[kernel_size]
         else:
-            width = 7
+            width = 3200
         
         self.fc_layer = nn.Sequential(
             nn.Dropout(p=0.1),
-            nn.Linear(3200, 1000),
+            nn.Linear(width, 1000),
             nn.ReLU(),
             nn.Dropout(p=0.1),
             nn.Linear(1000, 512),
