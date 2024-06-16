@@ -11,7 +11,7 @@ model_dir = "models"
 temp_model_dir = model_dir + os.sep + "tmp"
 
 
-def train_model(training_batch_size=100, kernel_size=4, learning_rate=0.001, model_name="model.pth", variant=False):
+def train_model(training_batch_size=100, kernel_size=7, learning_rate=0.001, model_name="model.pth", variant=False):
     if variant:
         print('Generating variant model')
     for model_file in os.listdir(temp_model_dir + os.sep):
