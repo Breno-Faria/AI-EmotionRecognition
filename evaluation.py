@@ -2,7 +2,7 @@
 from multiprocessing import freeze_support
 import numpy as np
 import torch
-from model import BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood
+from model import BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood, BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood_Variant1
 from PIL import Image
 import torchvision.transforms as transforms
 from dataset import loadData
@@ -137,19 +137,28 @@ def predict_emotion(model, img):
     return predicted_class.item()
 
 
-def generate_confusion_matrix():
-
+def generate_confusion_matrix(variant=0):
     labels = {
             "happy": 0,
             "angry": 1,
             "engaged": 2,
             "neutral": 3,
         }
-    
-    model = BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood()
-    model.load_state_dict(torch.load('model.pth'))
+   
+    if variant == 0:
+        model = BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood()
+        model.load_state_dict(torch.load('models/model.pth'))
 
-    tmp, tmp, testing_data_arr = loadData("./data.json")
+    if variant == 1:
+        model = BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood_Variant1()
+        model.load_state_dict(torch.load('models/model_variant1.pth'))
+
+    if variant == 2:
+        model = BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood(kernel_size=7)
+        model.load_state_dict(torch.load('models/model_variant2.pth'))
+
+
+    _, _, testing_data_arr = loadData("./data.json")
 
     confusion_matrix = [
 
@@ -161,7 +170,13 @@ def generate_confusion_matrix():
 
     for labeled_data in testing_data_arr:
         predicted_class = predict_emotion(model, base64.b64decode(labeled_data['img']))
-        confusion_matrix[predicted_class][labels[labeled_data['emotion']]] +=1
+        confusion_matrix[int(predicted_class)][labels[labeled_data['emotion']]] +=1
 
-
+    
     return confusion_matrix
+
+if __name__ == "__main__":
+    for i in range(3):
+        print(f"Variant {i}")
+        matrix = generate_confusion_matrix(variant=i)
+        print(generate_micro_metrics_row(matrix))
