@@ -39,7 +39,6 @@ def loadData(json_file, num_training=1400, num_validation=300, num_testing=300):
     data = []
     with open(json_file) as f:
         data = json.load(f)
-    random.shuffle(data)
     validation_idx = num_training
     testing_idx = num_training + num_validation
     training = data[:validation_idx]

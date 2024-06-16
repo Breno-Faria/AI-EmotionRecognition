@@ -4,8 +4,11 @@ import torch.nn as nn
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 
+
+
+
 class BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood(nn.Module):
-    def __init__(self, kernel_size=4):
+    def __init__(self, kernel_size=7):
         super(BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood, self).__init__()
         self.conv_layer = nn.Sequential(
             nn.Conv2d(in_channels=3, out_channels=32, stride=1, kernel_size=kernel_size),
@@ -62,7 +65,7 @@ class BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood
 
 
 class BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood_Variant1(nn.Module):
-    def __init__(self, kernel_size=4):
+    def __init__(self, kernel_size=7):
         super(BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood_Variant1, self).__init__()
         self.conv_layer = nn.Sequential(
             nn.Conv2d(in_channels=3, out_channels=32, stride=1, kernel_size=kernel_size),
@@ -87,7 +90,7 @@ class BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood
         if kernel_size in width_map.keys():
             width = width_map[kernel_size]
         else:
-            width = 3200
+            raise ValueError("unknown kernel size")
         
         self.fc_layer = nn.Sequential(
             nn.Dropout(p=0.1),

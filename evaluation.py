@@ -129,24 +129,25 @@ def generate_confusion_matrices(variant=0):
         }
     # v3->main
     # main->v3
+    # in models: changed variant with non-variant
     if variant == 0:
-        model = BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood_Variant1(kernel_size=7)
+        model = BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood(kernel_size=7)
         model.load_state_dict(torch.load('models/model.pth'))
 
     if variant == 1:
-        model = BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood_Variant1()
+        model = BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood(kernel_size=4)
         model.load_state_dict(torch.load('models/model_variant1.pth'))
 
     if variant == 2:
-        model = BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood(kernel_size=7)
+        model = BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood_Variant1(kernel_size=7)
         model.load_state_dict(torch.load('models/model_variant2.pth'))
 
     if variant == 3:
-        model = BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood()
+        model = BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood_Variant1(kernel_size=4)
         model.load_state_dict(torch.load('models/model_variant3.pth'))
 
 
-    _, _, testing_data_arr = loadData("./data.json")
+    _, _, testing_data_arr = loadData("./randomized_data.json")
 
     confusion_matrix = [
 

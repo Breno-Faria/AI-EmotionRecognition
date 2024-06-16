@@ -28,7 +28,7 @@ def train_model(training_batch_size=100, kernel_size=7, learning_rate=0.001, mod
         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
     ])
 
-    train_data, validation_data, test_data = dataset.loadData("data.json")
+    train_data, validation_data, test_data = dataset.loadData("randomized_data.json")
     trainset = dataset.EmotionDataset(json_array = train_data, transform=transform)
     validationset = dataset.EmotionDataset(json_array = validation_data, transform=transform)
     testset = dataset.EmotionDataset(json_array = test_data, transform=transform)
@@ -121,32 +121,54 @@ def train_model(training_batch_size=100, kernel_size=7, learning_rate=0.001, mod
     return model
 
 if __name__ == "__main__":
-    if len(sys.argv) == 2:
-        if sys.argv[1].endswith('.pth'):
-            train_model(model_name=sys.argv[1], kernel_size=7)
-        else:
-            print("Invalid file type, must end with .pth.")
-    elif len(sys.argv) == 3:
-        if sys.argv[1] == '-v' and sys.argv[2].endswith('.pth'):
-            train_model(variant=True, model_name=sys.argv[2], kernel_size=4)
-        else:
-            print('Invalid Arguments.')
+    filename = ""
+    kernel_size = 7
+    variant = False
+    if len(sys.argv) == 1:
+        print("train.py")
+        print("Usage: train.py <model_filename> <variant?> <kernel_size>")
+        print("Filename: must end in .pth, i.e. model.pth")
+        print("Variant: -v for variant or nothing for original")
+        print("Kernal size: 4 or 7, default 7")
+        print("Example: python3 train.py model.pth -v 4")
+
+    if sys.argv[1].endswith('.pth'):
+        filename = sys.argv[1]
     else:
-        print("No filename specified, saving to models/model.pth.")
-        train_model()
-    #train_model(kernel_size=3)
-    #train_model(kernel_size=5)
-    #train_model(kernel_size=6)
-    #train_model(kernel_size=7)
+        raise ValueError("Invalid filename for model.")
 
-    #train_model(training_batch_size=25)
-    #train_model(training_batch_size=50)
-    #train_model(training_batch_size=100)
-    #train_model(training_batch_size=200)
+    if len(sys.argv) == 3:
+        if sys.argv[2] == '-v':
+            variant = True
+        else:
+            if sys.argv[2] == '4':
+                kernel_size = 4
+            elif sys.argv[2] == '7':
+                kernel_size = 7
+            else:
+                raise ValueError("Unknown argument:", sys.argv[2])
 
-    #train_model(learning_rate=0.0005)
-    #train_model(learning_rate=0.0001)
-    #train_model(learning_rate=0.0002)
+    if len(sys.argv) == 4:
+        if sys.argv[2] == '-v':
+            variant = True
+        else:
+            raise ValueError("Unknown argument, should be -v:", sys.argv[2])
 
+        if sys.argv[3] == '4':
+            kernel_size = 4
+        elif sys.argv[3] == '7':
+            kernel_size = 7
+        else:
+            raise ValueError("Unknown argument:", sys.argv[3])
+                
+    if len(sys.argv) > 4:
+        raise ValueError("Too many arguments.")
 
+    assert(filename != "")
+    assert(kernel_size == 4 or kernel_size == 7)
+    print("training model.")
+    print("filename:", filename)
+    print("kernel size:", kernel_size)
+    print("variant:", variant)
+    train_model(model_name=filename, kernel_size=kernel_size, variant=variant)
 
