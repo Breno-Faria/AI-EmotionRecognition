@@ -105,17 +105,21 @@ def train_model(training_batch_size=100, kernel_size=4, learning_rate=0.001, mod
 
     model_filename = model_dir + os.sep + model_name
     torch.save(model.state_dict(), model_filename)
+    for model_file in os.listdir(temp_model_dir + os.sep):
+        os.remove(temp_model_dir + os.sep + model_file)
     return model
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        if sys.argv[1].endswith('.pth'):
-            train_model(model_name=sys.argv[1])
-        else:
-            print("Invalid file type, must end with .pth.")
-    else:
-        print("No filename specified, saving to models/model.pth.")
-        train_model()
+    for model_file in os.listdir(temp_model_dir + os.sep):
+        os.remove(temp_model_dir + os.sep + model_file)
+    # if len(sys.argv) > 1:
+    #     if sys.argv[1].endswith('.pth'):
+    #         train_model(model_name=sys.argv[1])
+    #     else:
+    #         print("Invalid file type, must end with .pth.")
+    # else:
+    #     print("No filename specified, saving to models/model.pth.")
+    #     train_model()
     #train_model(kernel_size=3)
     #train_model(kernel_size=5)
     #train_model(kernel_size=6)
