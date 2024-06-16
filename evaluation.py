@@ -1,5 +1,5 @@
-#accuracy = (confusion_matrix[0][0] + confusion_matrix[1][1]) / 2
 from multiprocessing import freeze_support
+import sys
 import numpy as np
 import torch
 from model import BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood, BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood_Variant1
@@ -10,39 +10,19 @@ import base64
 import io
 
 
+def generate_micro_metrics(micro_matrix):
+    TP = micro_matrix[0][0]
+    TN = micro_matrix[1][1]
+    FN = micro_matrix[1][0]
+    FP = micro_matrix[0][1]
 
-def _generate_micro_metrics_row(confusion_matrix):
+    precision = (TP) / (TP + FP)
+    recall = TP / (TP + FN)
+    f1 = (2*precision*recall)/(precision+recall)
+    accuracy = (TP + TN) / (TP + TN + FN + FP)
+    
+    return precision, recall, f1, accuracy
 
-
-    num_classes = len(confusion_matrix)
-
-
-    precision = [0.0] * num_classes
-    recall = [0.0] * num_classes
-    f1_measure = [0.0] * num_classes
-
-    for i in range(num_classes):
-        # Precision for class i
-        true_positives = confusion_matrix[i][i]
-        predicted_positives = sum(confusion_matrix[j][i] for j in range(num_classes))
-        precision[i] = true_positives / predicted_positives if predicted_positives > 0 else 0.0
-        
-        # Recall for class i
-        actual_positives = sum(confusion_matrix[i][j] for j in range(num_classes))
-        recall[i] = true_positives / actual_positives if actual_positives > 0 else 0.0
-        
-        # F1-Measure for class i
-        if precision[i] + recall[i] > 0:
-            f1_measure[i] = 2 * precision[i] * recall[i] / (precision[i] + recall[i])
-        else:
-            f1_measure[i] = 0.0
-
-    # Micro-averaged Precision, Recall, and F1-Measure
-    micro_averaged_precision = sum(precision) / num_classes
-    micro_averaged_recall = sum(recall) / num_classes
-    micro_averaged_f1_measure = sum(f1_measure) / num_classes
-
-    return micro_averaged_precision, micro_averaged_f1_measure, micro_averaged_recall
 
 def generate_macro_metrics_row(confusion_matrix):
 
@@ -147,9 +127,10 @@ def generate_confusion_matrices(variant=0):
             "engaged": 2,
             "neutral": 3,
         }
-   
+    # v3->main
+    # main->v3
     if variant == 0:
-        model = BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood()
+        model = BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood_Variant1(kernel_size=7)
         model.load_state_dict(torch.load('models/model.pth'))
 
     if variant == 1:
@@ -161,7 +142,7 @@ def generate_confusion_matrices(variant=0):
         model.load_state_dict(torch.load('models/model_variant2.pth'))
 
     if variant == 3:
-        model = BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood_Variant1(kernel_size=7)
+        model = BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood()
         model.load_state_dict(torch.load('models/model_variant3.pth'))
 
 
@@ -221,29 +202,86 @@ def generate_confusion_matrices(variant=0):
     
     return confusion_matrix, micro_confusion_matrices
 
+
+def display_micro_stats(variant=0):
+    print('\n')
+    print(f"Variant {variant}")
+    _, micro_matrices = generate_confusion_matrices(variant=variant)
+    precision_micro_vector = []
+    recall_micro_vector = []
+    f1_micro_vector = []
+    accuracy_micro_vector = []
+    for emotion in micro_matrices.keys():
+        micro_matrix = micro_matrices[emotion]
+        precision, recall, f1, accuracy = generate_micro_metrics(micro_matrix) 
+        precision_micro_vector.append(precision)
+        recall_micro_vector.append(recall)
+        f1_micro_vector.append(f1)
+        accuracy_micro_vector.append(accuracy)
+        # print("Emotion:", emotions[emotion])
+        # for row in micro_matrices[emotion]:
+        #     print(row)
+        # print("Precision:", precision)
+        # print("Recall:", recall)
+        # print("F1:", f1)
+        # print("Accuracy:", accuracy)
+        # print()
+    precision = sum(precision_micro_vector) / 4
+    f1 = sum(f1_micro_vector) / 4
+    recall = sum(recall_micro_vector) / 4
+    accuracy = sum(accuracy_micro_vector) / 4
+    print("Accuracy:", accuracy)
+    print("Precision:", precision) 
+    print("F1:", f1) 
+    print("Recall:", accuracy)
+
+def display_macro_stats(variant=0):
+    print('\n')
+    print(f"Variant {variant}")
+    general_matrix, _ = generate_confusion_matrices(variant=variant)
+    precision_vector, f1_vector, recall_vector, accuracy= generate_metrics_row(general_matrix)
+    for row in general_matrix:
+        print(row)
+    print()
+    print("Accuracy:", accuracy)
+    print("Precision:", precision_vector) 
+    print("F1:", f1_vector) 
+    print("Recall:", recall_vector)
+    precision = sum(precision_vector) / 4
+    f1 = sum(f1_vector) / 4
+    recall = sum(recall_vector) / 4
+    print(f'Precision {precision}')
+    print(f'f1 {f1}')
+    print(f'recall {recall}')
+
+
 if __name__ == "__main__":
+    emotions = {
+        0: "happy",
+        1: "angry",
+        2: "engaged",
+        3: "neutral"
+    }
 
-    for i in range(4):
-        print('\n')
-        print(f"Variant {i}")
-        general_matrix, micro_matrices = generate_confusion_matrices(variant=i)
-        precision_vector, f1_vector, recall_vector, accuracy= generate_metrics_row(general_matrix)
-        for emotion in micro_matrices.keys():
-            for row in micro_matrices[emotion]:
-                print(row)
-            print()
-
-        for row in general_matrix:
-            print(row)
-        print()
-        print("Accuracy:", accuracy)
-        print("Precision:", precision_vector) 
-        print("F1:", f1_vector) 
-        print("Recall:", recall_vector)
-        precision = sum(precision_vector) / 4
-        f1 = sum(f1_vector) / 4
-        recall = sum(recall_vector) / 4
-        print(f'Precision {precision}')
-        print(f'f1 {f1}')
-        print(f'recall {recall}')
-   
+    if len(sys.argv) == 3:
+        try:
+            variant_choice = int(sys.argv[2])
+        except:
+            print("Unknown argument for variant.")
+        else:
+            if sys.argv[1] == '-i':
+                display_micro_stats(variant_choice)
+            elif sys.argv[1] == '-a':
+                display_macro_stats(variant_choice)
+    elif len(sys.argv) == 2:
+        if sys.argv[1] == '-i':
+            for i in range(4):
+                display_micro_stats(i)
+        elif sys.argv[1] == '-a':
+            for i in range(4):
+                display_macro_stats(i)
+    else:
+        print("evaluation.py")
+        print("Usage:\t\tevaluation.py <micro/macro> <variant_number>")
+        print("micro/macro:\t-i: micro statistics, -a: macro statistics")
+        print("Variant number (optional): 0 (default, main model), 1, 2, 3")
