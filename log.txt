@@ -1,0 +1,16 @@
+48x48 resize, kernel 4: 40.6%
+no resize, kernel 4: 44%
+32x32 resize, kernel 4: 45.3%
+
+batch size 25: 40%
+batch size 50: 45%
+
+
+kernal size 3: 41.3
+kernal size 4: 41.6
+kernel size 5: 41.0
+kernel size 6: 37%
+kernel size 7: 41%
+
+two dropout layers: 41.67%
+zero dropout layers: 
