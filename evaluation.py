@@ -11,32 +11,129 @@ from dataset import loadData
 import base64
 import io
 
-def generate_micro_metrics_row(confusion_matrix_array):
+def generate_micro_metrics_row(confusion_matrix):
 
-    confusion_matrix_sum = np.sum(confusion_matrix_array, axis=0)
-    return generate_metrics_row(confusion_matrix_sum)
+    num_classes = len(confusion_matrix)
 
-def generate_macro_metrics_row(confusion_matrix_array):
+    # Accuracy
+    correct_predictions = sum(confusion_matrix[i][i] for i in range(num_classes))
+    total_predictions = sum(sum(confusion_matrix[i][j] for j in range(num_classes)) for i in range(num_classes))
+    accuracy = correct_predictions / total_predictions
 
-    metrics_results = np.array([0.0, 0.0, 0.0])
+    # Precision, Recall, and F1-Measure for each class
+    precision = [0.0] * num_classes
+    recall = [0.0] * num_classes
+    f1_measure = [0.0] * num_classes
 
-    for confusion_matrix in confusion_matrix_array:
-        metrix_results += generate_metrics_row(confusion_matrix)
-    metrics_results /= len(confusion_matrix_array)
+    for i in range(num_classes):
+        # Precision for class i
+        true_positives = confusion_matrix[i][i]
+        predicted_positives = sum(confusion_matrix[j][i] for j in range(num_classes))
+        precision[i] = true_positives / predicted_positives if predicted_positives > 0 else 0.0
+        
+        # Recall for class i
+        actual_positives = sum(confusion_matrix[i][j] for j in range(num_classes))
+        recall[i] = true_positives / actual_positives if actual_positives > 0 else 0.0
+        
+        # F1-Measure for class i
+        if precision[i] + recall[i] > 0:
+            f1_measure[i] = 2 * precision[i] * recall[i] / (precision[i] + recall[i])
+        else:
+            f1_measure[i] = 0.0
 
-    return metrics_results
+    # Micro-averaged Precision, Recall, and F1-Measure
+    micro_precision = sum(precision) / num_classes
+    micro_recall = sum(recall) / num_classes
+    micro_f1_measure = sum(f1_measure) / num_classes
+
+    #return micro_precision, micro_recall, micro_f1_measure
+
+    # Print micro-averaged metrics
+    print(accuracy)
+    print(f"Micro-averaged Precision: {micro_precision:.4f}")
+    print(f"Micro-averaged Recall: {micro_recall:.4f}")
+    print(f"Micro-averaged F1-Measure: {micro_f1_measure:.4f}")
+
+def generate_macro_metrics_row(confusion_matrix):
+
+    # Accuracy
+    accuracy = 0.0
+    correct_predictions = sum(confusion_matrix[i][i] for i in range(4))
+    total_predictions = sum(sum(confusion_matrix[i][j] for j in range(4)) for i in range(4))
+    accuracy = correct_predictions / total_predictions
+
+    # Precision, Recall, and F1-Measure for each class
+    precision = [0.0] * 4
+    recall = [0.0] * 4
+    f1_measure = [0.0] * 4
+
+    for i in range(4):
+        # Precision for class i
+        true_positives = confusion_matrix[i][i]
+        predicted_positives = sum(confusion_matrix[j][i] for j in range(4))
+        precision[i] = true_positives / predicted_positives if predicted_positives > 0 else 0.0
+        
+        # Recall for class i
+        actual_positives = sum(confusion_matrix[i][j] for j in range(4))
+        recall[i] = true_positives / actual_positives if actual_positives > 0 else 0.0
+        
+        # F1-Measure for class i
+        if precision[i] + recall[i] > 0:
+            f1_measure[i] = 2 * precision[i] * recall[i] / (precision[i] + recall[i])
+        else:
+            f1_measure[i] = 0.0
+
+    macro_averaged_precision = 0.0
+    for i in range(4):
+        macro_averaged_precision += precision[i]
+    macro_averaged_precision /= 4
+
+    macro_averaged_f1_measure = 0.0
+    for i in range(4):
+        macro_averaged_f1_measure += f1_measure[i]
+    macro_averaged_f1_measure /= 4
+
+    macro_averaged_recall = 0.0
+    for i in range(4):
+        macro_averaged_recall += recall[i]
+    macro_averaged_recall /= 4
+
+    print(f'recall: {macro_averaged_recall}\n precision: {macro_averaged_precision}\n f1 measure: {macro_averaged_f1_measure}\n')
 
 
 
 def generate_metrics_row(confusion_matrix):
 
-    precision = confusion_matrix[0][0] / (confusion_matrix[0][0]+confusion_matrix[1][0] + 1e-10)
-    recall = confusion_matrix[0][0] / (confusion_matrix[0][0] + confusion_matrix[0][1] + 1e-10)
-    f1 = 2 * ((precision*recall) / precision + recall + 1e-10)
+    # Accuracy
+    accuracy = 0.0
+    correct_predictions = sum(confusion_matrix[i][i] for i in range(4))
+    total_predictions = sum(sum(confusion_matrix[i][j] for j in range(4)) for i in range(4))
+    accuracy = correct_predictions / total_predictions
 
-    res = [precision, recall, f1]
-    return res
+    # Precision, Recall, and F1-Measure for each class
+    precision = [0.0] * 4
+    recall = [0.0] * 4
+    f1_measure = [0.0] * 4
 
+    for i in range(4):
+        # Precision for class i
+        true_positives = confusion_matrix[i][i]
+        predicted_positives = sum(confusion_matrix[j][i] for j in range(4))
+        precision[i] = true_positives / predicted_positives if predicted_positives > 0 else 0.0
+        
+        # Recall for class i
+        actual_positives = sum(confusion_matrix[i][j] for j in range(4))
+        recall[i] = true_positives / actual_positives if actual_positives > 0 else 0.0
+        
+        # F1-Measure for class i
+        if precision[i] + recall[i] > 0:
+            f1_measure[i] = 2 * precision[i] * recall[i] / (precision[i] + recall[i])
+        else:
+            f1_measure[i] = 0.0
+
+    for i in range(4):
+        print(f"Class {i} - Precision: {precision[i]}, Recall: {recall[i]}, F1-Measure: {f1_measure[i]}")
+    
 
 def predict_emotion(model, img):
 
@@ -60,7 +157,6 @@ def predict_emotion(model, img):
 
     _, predicted_class = torch.max(output, 1)
     return predicted_class.item()
-    print(f'Predicted class: {predicted_class.item()}')
 
 
 def generate_confusion_matrix():
@@ -94,32 +190,4 @@ def generate_confusion_matrix():
 
 conf = generate_confusion_matrix()
 print(conf)
-
-
-
-
-
-# # Load the model
-# model = BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood()
-# model.load_state_dict(torch.load('model.pth'))
-# model.eval()
-
-# # Define preprocessing transformations (same as in training)
-# preprocess = transforms.Compose([
-#     transforms.Resize((48, 48)),  # Resize image to match training input size
-#     transforms.ToTensor(),  # Convert image to tensor
-#     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))  # Normalize image
-# ])
-
-# # Load and preprocess the image
-# image_path = './dataset/happy/img0.png'
-# image = Image.open(image_path).convert('RGB')
-# input_tensor = preprocess(image)
-# input_tensor = input_tensor.unsqueeze(0)  # Add batch dimension
-
-# # Perform inference
-# with torch.no_grad():  # Disable gradient computation
-#     output = model(input_tensor)
-
-# _, predicted_class = torch.max(output, 1)
-# print(f'Predicted class: {predicted_class.item()}')
+generate_micro_metrics_row(conf)
