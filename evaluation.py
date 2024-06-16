@@ -1,12 +1,10 @@
 #accuracy = (confusion_matrix[0][0] + confusion_matrix[1][1]) / 2
 from multiprocessing import freeze_support
-import train
 import numpy as np
 import torch
 from model import BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood
 from PIL import Image
 import torchvision.transforms as transforms
-import os
 from dataset import loadData
 import base64
 import io
