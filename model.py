@@ -30,14 +30,27 @@ class BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood
 
         )
 
+        width_map = {
+            3: 9,
+            4: 7,
+            5: 6,
+            6: 4,
+            7: 3,
+        }
+        if kernel_size in width_map.keys():
+            width = width_map[kernel_size]
+        else:
+            width = 7
+        
         self.fc_layer = nn.Sequential(
             nn.Dropout(p=0.1),
-            nn.Linear(64*7*7, 1000),
+            nn.Linear(64*width*width, 1000),
             nn.ReLU(),
+            nn.Dropout(p=0.1),
             nn.Linear(1000, 512),
             nn.ReLU(),
             nn.Dropout(p=0.1),
-            nn.Linear(512, 10),
+            nn.Linear(512, 4),
         )
 
     def forward(self, x):
