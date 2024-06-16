@@ -8,6 +8,31 @@
 
 # Content
 
+## dataset.py
+
+Dataset.py defines our dataset class EmotionDataset, inheriting from torch.utils.data.Dataset. This allows us to use our dataset in a consistent way with our models.
+
+## model.py
+
+Model.py defines our main and variant models, both inheriting from torch.nn.Module. They contain the standard architecture for a class inheriting from a Module, including defining the layers as nn.Sequential layers as well as overriding the forward method to allow for its use. Since the kernel size defines how the layers scale from two dimentional down to one, they contain functionality to dynamically scale the width of the first forwards layer on initiation. Analysis of the design decisions are available in our report.
+
+## train.py
+
+This script is the one responsible for training our models. It uses 10 epocs, saving the best version from each epoc to models/{model_name.pth}. When using this script, you must provide a filename ending in .pth. Usage is as follows:
+
+python3 train.py {filename.pth} {variant?} {kernel_size}
+
+The optional variant flag, -v, decides whether we use the variant model or not. The optional kernel size, either 4 or 7 (default 7), decides the size of the kernel for the model. 
+
+## evaluation.py
+
+This script calculates the micro and macro confusion matrices, which it then uses to calculate accuracy, precision, recall, and f1 measure. It takes the models that are decided on calling of the script and outputs these measures. Usage is as follows:
+
+python3 evaluation.py {micro/macro} {variant_number}
+
+micro/macro: -i for micro statistics, -a for macro statistics
+variant number: 0, 1, 2, or 3. If none are provided it will display statistics for all four.
+
 ## collect_data.py
 
 
