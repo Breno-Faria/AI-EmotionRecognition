@@ -148,6 +148,7 @@ def generate_confusion_matrices(variant=0):
 
 
     _, _, testing_data_arr = loadData("./randomized_data.json")
+    #predict_emotion(model=model, 
 
     confusion_matrix = [
 
@@ -257,32 +258,36 @@ def display_macro_stats(variant=0):
 
 
 if __name__ == "__main__":
-    emotions = {
-        0: "happy",
-        1: "angry",
-        2: "engaged",
-        3: "neutral"
-    }
+    # emotions = {
+    #     0: "happy",
+    #     1: "angry",
+    #     2: "engaged",
+    #     3: "neutral"
+    # }
+    #
+    # if len(sys.argv) == 3:
+    #     try:
+    #         variant_choice = int(sys.argv[2])
+    #     except:
+    #         print("Unknown argument for variant.")
+    #     else:
+    #         if sys.argv[1] == '-i':
+    #             display_micro_stats(variant_choice)
+    #         elif sys.argv[1] == '-a':
+    #             display_macro_stats(variant_choice)
+    # elif len(sys.argv) == 2:
+    #     if sys.argv[1] == '-i':
+    #         for i in range(4):
+    #             display_micro_stats(i)
+    #     elif sys.argv[1] == '-a':
+    #         for i in range(4):
+    #             display_macro_stats(i)
+    # else:
+    #     print("evaluation.py")
+    #     print("Usage:\t\tevaluation.py <micro/macro> <variant_number>")
+    #     print("micro/macro:\t-i: micro statistics, -a: macro statistics")
+    #     print("Variant number (optional): 0 (default, main model), 1, 2, 3")
 
-    if len(sys.argv) == 3:
-        try:
-            variant_choice = int(sys.argv[2])
-        except:
-            print("Unknown argument for variant.")
-        else:
-            if sys.argv[1] == '-i':
-                display_micro_stats(variant_choice)
-            elif sys.argv[1] == '-a':
-                display_macro_stats(variant_choice)
-    elif len(sys.argv) == 2:
-        if sys.argv[1] == '-i':
-            for i in range(4):
-                display_micro_stats(i)
-        elif sys.argv[1] == '-a':
-            for i in range(4):
-                display_macro_stats(i)
-    else:
-        print("evaluation.py")
-        print("Usage:\t\tevaluation.py <micro/macro> <variant_number>")
-        print("micro/macro:\t-i: micro statistics, -a: macro statistics")
-        print("Variant number (optional): 0 (default, main model), 1, 2, 3")
+    model = BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood_Variant1(kernel_size=7)
+    model.load_state_dict(torch.load('models/model_variant2.pth'))
+    predict_emotion(model,"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") 
