@@ -6,12 +6,14 @@ from torch.utils.data import DataLoader
 import torch
 import torch.nn as nn
 import torchvision.transforms as transforms
+from multiprocessing import freeze_support
+
 
 model_dir = "models"
 temp_model_dir = model_dir + os.sep + "tmp"
 
 
-def train_model(training_batch_size=100, kernel_size=7, learning_rate=0.001, model_name="model.pth", variant=False):
+def train_model(training_batch_size=100, kernel_size=7, learning_rate=0.001, model_name="model.pth", variant=False, k_fold = False, iteration=0, fold_data=[]):
     if variant:
         print('Generating variant model')
     for model_file in os.listdir(temp_model_dir + os.sep):
@@ -28,12 +30,18 @@ def train_model(training_batch_size=100, kernel_size=7, learning_rate=0.001, mod
         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
     ])
 
-    train_data, validation_data, test_data = dataset.loadData("randomized_data.json")
+    if not k_fold:
+        train_data, validation_data, test_data = dataset.loadData("randomized_data.json")
+        
+        print("Loaded Dataset")
+    else:
+        idx = len(fold_data[iteration][0])//10
+        train_data, validation_data, test_data = fold_data[iteration][0][idx:], fold_data[iteration][0][:idx], fold_data[iteration][1]
+
+    
     trainset = dataset.EmotionDataset(json_array = train_data, transform=transform)
     validationset = dataset.EmotionDataset(json_array = validation_data, transform=transform)
     testset = dataset.EmotionDataset(json_array = test_data, transform=transform)
-    print("Loaded Dataset")
-
     num_epocs = 10
 
     train_loader = DataLoader(trainset, batch_size=training_batch_size, shuffle=True, num_workers=2)
@@ -121,6 +129,7 @@ def train_model(training_batch_size=100, kernel_size=7, learning_rate=0.001, mod
     return model
 
 if __name__ == "__main__":
+    freeze_support()
     filename = ""
     kernel_size = 7
     variant = False
