@@ -17,7 +17,7 @@ for emotion in os.listdir(path_json):
             if category != ".DS_Store":
                 path_3_png = path_2_png + "/" + category
                 path_3_json = path_2_json + "/" + category
-                fo = open(path_3_json+"/encoded_images.txt", "w")
+                fo = open(path_3_json+"/encoded_images.json", "w")
                 tmp_arr = []
                 for img in os.listdir(path_3_png):
                     if img != ".DS_Store":

@@ -13,7 +13,7 @@ model_dir = "models"
 temp_model_dir = model_dir + os.sep + "tmp"
 
 
-def train_model(training_batch_size=100, kernel_size=7, learning_rate=0.001, model_name="model.pth", variant=False, k_fold = False, iteration=0, fold_data=[]):
+def train_model(training_batch_size=100, kernel_size=7, learning_rate=0.001, model_name="model.pth", variant=False, k_fold = False, iteration=0, fold_data=[], biased=False, biased_file=""):
     if variant:
         print('Generating variant model')
     for model_file in os.listdir(temp_model_dir + os.sep):
@@ -30,14 +30,14 @@ def train_model(training_batch_size=100, kernel_size=7, learning_rate=0.001, mod
         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
     ])
 
-    if not k_fold:
-        train_data, validation_data, test_data = dataset.loadData("randomized_data.json")
-        
-        print("Loaded Dataset")
-    else:
+    if k_fold:
         idx = len(fold_data[iteration][0])//10
         train_data, validation_data, test_data = fold_data[iteration][0][idx:], fold_data[iteration][0][:idx], fold_data[iteration][1]
-
+    elif biased:
+        train_data, validation_data, test_data = dataset.loadData(biased_file, biased=True)
+    else:
+        train_data, validation_data, test_data = dataset.loadData("randomized_data.json")
+        
     
     trainset = dataset.EmotionDataset(json_array = train_data, transform=transform)
     validationset = dataset.EmotionDataset(json_array = validation_data, transform=transform)

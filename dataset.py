@@ -36,12 +36,17 @@ class EmotionDataset(Dataset):
         emotion = torch.tensor(emotion, dtype=torch.long)
         return img, emotion
 
-def loadData(json_file, num_training=1400, num_validation=300, num_testing=300):
+def loadData(json_file, num_training=1400, num_validation=300, num_testing=300, biased=False):
     data = []
     with open(json_file) as f:
         data = json.load(f)
-    validation_idx = num_training
-    testing_idx = num_training + num_validation
+    if not biased:
+        validation_idx = num_training
+        testing_idx = num_training + num_validation
+
+    else:
+        validation_idx = (len(data)//10)*8
+        testing_idx = validation_idx+(len(data)//10)
     training = data[:validation_idx]
     validation = data[validation_idx:testing_idx]
     testing = data[testing_idx:]
