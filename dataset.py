@@ -5,6 +5,7 @@ import torch
 from torch.utils.data import Dataset
 from PIL import Image
 from io import BytesIO
+from sklearn.model_selection import KFold
 
 class EmotionDataset(Dataset):
     def __init__(self, json_array, transform=None):
@@ -35,15 +36,34 @@ class EmotionDataset(Dataset):
         emotion = torch.tensor(emotion, dtype=torch.long)
         return img, emotion
 
-def loadData(json_file, num_training=1400, num_validation=300, num_testing=300):
+def loadData(json_file, num_training=1400, num_validation=300, num_testing=300, biased=False):
     data = []
     with open(json_file) as f:
         data = json.load(f)
-    validation_idx = num_training
-    testing_idx = num_training + num_validation
+    if not biased:
+        validation_idx = num_training
+        testing_idx = num_training + num_validation
+
+    else:
+        validation_idx = (len(data)//10)*8
+        testing_idx = validation_idx+(len(data)//10)
     training = data[:validation_idx]
     validation = data[validation_idx:testing_idx]
     testing = data[testing_idx:]
     return training, validation, testing
 
 
+def k_loadData(json_file, k=10):
+    data = []
+    with open(json_file) as f:
+        data = json.load(f)
+    
+    kf = KFold(n_splits=k)
+    
+    fold_data = []
+    for train_index, test_index in kf.split(data):
+        training = [data[i] for i in train_index]
+        testing = [data[i] for i in test_index]
+        fold_data.append((training, testing))
+    
+    return fold_data

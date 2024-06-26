@@ -1,4 +1,3 @@
-from multiprocessing import freeze_support
 import sys
 import numpy as np
 import torch
@@ -120,7 +119,7 @@ def predict_emotion(model, img):
     return predicted_class.item()
 
 
-def generate_confusion_matrices(variant=0):
+def generate_confusion_matrices(model_name="model.pth"):
     labels = {
             "happy": 0,
             "angry": 1,
@@ -130,22 +129,24 @@ def generate_confusion_matrices(variant=0):
     # v3->main
     # main->v3
     # in models: changed variant with non-variant
-    if variant == 0:
-        model = BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood(kernel_size=7)
-        model.load_state_dict(torch.load('models/model.pth'))
+    # if variant == 0:
+    #     model = BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood(kernel_size=7)
+    #     model.load_state_dict(torch.load('models/model.pth'))
 
-    if variant == 1:
-        model = BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood(kernel_size=4)
-        model.load_state_dict(torch.load('models/model_variant1.pth'))
+    # if variant == 1:
+    #     model = BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood(kernel_size=4)
+    #     model.load_state_dict(torch.load('models/model_variant1.pth'))
 
-    if variant == 2:
-        model = BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood_Variant1(kernel_size=7)
-        model.load_state_dict(torch.load('models/model_variant2.pth'))
+    # if variant == 2:
+    #     model = BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood_Variant1(kernel_size=7)
+    #     model.load_state_dict(torch.load('models/model_variant2.pth'))
 
-    if variant == 3:
-        model = BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood_Variant1(kernel_size=4)
-        model.load_state_dict(torch.load('models/model_variant3.pth'))
+    # if variant == 3:
+    #     model = BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood_Variant1(kernel_size=4)
+    #     model.load_state_dict(torch.load('models/model_variant3.pth'))
 
+    model = BrenoPeterandSydneysSuperCoolConvolutionalNeuralNetworkVeryAccurateAndGood(kernel_size=7)
+    model.load_state_dict(torch.load(f'models/{model_name}.pth'))
 
     _, _, testing_data_arr = loadData("./randomized_data.json")
     #predict_emotion(model=model, 
