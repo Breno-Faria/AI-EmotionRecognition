@@ -8,7 +8,7 @@ def train_models_k_fold(k=10):
 
     for i in range(k):
         name = f'model_{i}_kfold.pth'
-        train_model(k_fold = True, iteration=i, fold_data=k_loadData("randomized_data.json", k=k), model_name=name)
+        train_model(k_fold = True, iteration=i, fold_data=k_loadData("new_data.json", k=k), model_name=name)
 
 def generate_stats_for_k_fold(k=10):
 
@@ -30,9 +30,6 @@ def generate_stats_for_k_fold(k=10):
 
         for emotion in micro_conf_matrix.keys():
             micro_matrix = micro_conf_matrix[emotion]
-            print(micro_matrix[0])
-            print(micro_matrix[1])
-            print()
             precision, recall, f1, _= generate_micro_metrics(micro_matrix) 
             precision_micro_vector.append(precision)
             recall_micro_vector.append(recall)
@@ -43,8 +40,6 @@ def generate_stats_for_k_fold(k=10):
         mi_f1 = sum(f1_micro_vector) / 4
         mi_recall = sum(recall_micro_vector) / 4
         #accuracy = sum(accuracy_micro_vector) / 4
-        for row in conf_matrix:
-            print(row)
         precision_vector, f1_vector, recall_vector, accuracy= generate_metrics_row(conf_matrix)
         macro_averaged_precision = sum(precision_vector) / 4
         macro_averaged_f1_measure = sum(f1_vector) / 4
@@ -58,8 +53,8 @@ def generate_stats_for_k_fold(k=10):
         overall_ma_f += macro_averaged_f1_measure
         overall_accuracy += accuracy
 
-        print(f'\n\n{name}:\nMicro Precision: {mi_precision}\nMicro Recall: {mi_recall}\nMicro F1: {mi_f1}\n\n' +
-              f'Macro Precision: {macro_averaged_precision}\nMacro Recall: {macro_averaged_recall}\nMacro F1: {macro_averaged_f1_measure}\n\n' +
+        print(f'\n\n{name}:\nMacro Precision: {macro_averaged_precision}\nMacro Recall: {macro_averaged_recall}\nMacro F1: {macro_averaged_f1_measure}\n\n' +
+            f'Micro Precision: {mi_precision}\nMicro Recall: {mi_recall}\nMicro F1: {mi_f1}\n\n' +
               f'Overall Accuracy: {accuracy}\n\n')
 
     

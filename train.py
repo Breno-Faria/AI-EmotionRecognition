@@ -190,5 +190,5 @@ if __name__ == "__main__":
     print("filename:", filename)
     print("kernel size:", kernel_size)
     print("variant:", variant)
-    train_model(model_name=filename, kernel_size=kernel_size, variant=variant, randomized=randomize)
+    train_model(model_name=filename, kernel_size=kernel_size, variant=variant, randomized=randomize, new_data=True)
 

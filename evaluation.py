@@ -221,12 +221,7 @@ def generate_confusion_matrices(model_name="model.pth", data_dir="./randomized_d
 
 def display_micro_stats(new=False):
     print('\n')
-    _, _, micro_matrices = generate_confusion_matrices(new=new)
-    for i in micro_matrices.keys():
-        mm = micro_matrices[i]
-        print()
-        print(mm[0])
-        print(mm[1])
+    _, _, micro_matrices = generate_confusion_matrices(model_name= "best_model.pth",new=new)
     precision_micro_vector = []
     recall_micro_vector = []
     f1_micro_vector = []
