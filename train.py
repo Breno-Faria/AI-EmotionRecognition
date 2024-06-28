@@ -7,13 +7,14 @@ import torch
 import torch.nn as nn
 import torchvision.transforms as transforms
 from multiprocessing import freeze_support
+import randomize_dataset
 
 
 model_dir = "models"
 temp_model_dir = model_dir + os.sep + "tmp"
 
 
-def train_model(training_batch_size=100, kernel_size=7, learning_rate=0.001, model_name="model.pth", variant=False, k_fold = False, iteration=0, fold_data=[], biased=False, biased_file=""):
+def train_model(training_batch_size=100, kernel_size=7, learning_rate=0.001, model_name="model.pth", variant=False, k_fold = False, iteration=0, fold_data=[], biased=False, biased_file="", randomized=False, new_data=False):
     if variant:
         print('Generating variant model')
     for model_file in os.listdir(temp_model_dir + os.sep):
@@ -35,6 +36,12 @@ def train_model(training_batch_size=100, kernel_size=7, learning_rate=0.001, mod
         train_data, validation_data, test_data = fold_data[iteration][0][idx:], fold_data[iteration][0][:idx], fold_data[iteration][1]
     elif biased:
         train_data, validation_data, test_data = dataset.loadData(biased_file, biased=True)
+    elif randomized:
+        randomize_dataset.read_and_randomize("data.json", "randomized_data_2.json")
+        train_data, validation_data, test_data = dataset.loadData("randomized_data_2.json")
+    elif new_data:
+        print("using new_data")
+        train_data, validation_data, test_data = dataset.loadData("new_data.json", num_training=1484, num_validation=318, num_testing=318)
     else:
         train_data, validation_data, test_data = dataset.loadData("randomized_data.json")
         
@@ -100,6 +107,7 @@ def train_model(training_batch_size=100, kernel_size=7, learning_rate=0.001, mod
 
     print(f"Best model is from epoc {max_epoc+1} with accuracy {accuracy_per_epoc[max_epoc]}")
     model.load_state_dict(torch.load(temp_model_dir + os.sep + f'epoc_{max_epoc}.pth'))
+    model.eval()
 
     with torch.no_grad():
         correct = 0
@@ -133,6 +141,7 @@ if __name__ == "__main__":
     filename = ""
     kernel_size = 7
     variant = False
+    randomize = False
     if len(sys.argv) == 1:
         print("train.py")
         print("Usage: train.py <model_filename> <variant?> <kernel_size>")
@@ -154,6 +163,8 @@ if __name__ == "__main__":
                 kernel_size = 4
             elif sys.argv[2] == '7':
                 kernel_size = 7
+            elif sys.argv[2] == '-r':
+                randomize = True
             else:
                 raise ValueError("Unknown argument:", sys.argv[2])
 
@@ -179,5 +190,5 @@ if __name__ == "__main__":
     print("filename:", filename)
     print("kernel size:", kernel_size)
     print("variant:", variant)
-    train_model(model_name=filename, kernel_size=kernel_size, variant=variant)
+    train_model(model_name=filename, kernel_size=kernel_size, variant=variant, randomized=randomize)
 

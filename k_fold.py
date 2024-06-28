@@ -8,7 +8,7 @@ def train_models_k_fold(k=10):
 
     for i in range(k):
         name = f'model_{i}_kfold.pth'
-        train_model(k_fold = True, iteration=i, fold_data=k_loadData("data.json", k=k), model_name=name)
+        train_model(k_fold = True, iteration=i, fold_data=k_loadData("randomized_data.json", k=k), model_name=name)
 
 def generate_stats_for_k_fold(k=10):
 
@@ -20,27 +20,31 @@ def generate_stats_for_k_fold(k=10):
     overall_mi_f = 0
     overall_accuracy = 0
     for i in range(k):
-        name = f'model_{i}_kfold'
-        conf_matrix, micro_conf_matrix = generate_confusion_matrices(name)
+        name = f'model_{i}_kfold.pth'
+        _, conf_matrix, micro_conf_matrix = generate_confusion_matrices(name, kfold=True, iteration=i)
 
         precision_micro_vector = []
         recall_micro_vector = []
         f1_micro_vector = []
-        accuracy_micro_vector = []
+        #accuracy_micro_vector = []
 
         for emotion in micro_conf_matrix.keys():
             micro_matrix = micro_conf_matrix[emotion]
-            precision, recall, f1, accuracy = generate_micro_metrics(micro_matrix) 
+            print(micro_matrix[0])
+            print(micro_matrix[1])
+            print()
+            precision, recall, f1, _= generate_micro_metrics(micro_matrix) 
             precision_micro_vector.append(precision)
             recall_micro_vector.append(recall)
             f1_micro_vector.append(f1)
-            accuracy_micro_vector.append(accuracy)
+            #accuracy_micro_vector.append(accuracy)
 
         mi_precision = sum(precision_micro_vector) / 4
         mi_f1 = sum(f1_micro_vector) / 4
         mi_recall = sum(recall_micro_vector) / 4
-        accuracy = sum(accuracy_micro_vector) / 4
-
+        #accuracy = sum(accuracy_micro_vector) / 4
+        for row in conf_matrix:
+            print(row)
         precision_vector, f1_vector, recall_vector, accuracy= generate_metrics_row(conf_matrix)
         macro_averaged_precision = sum(precision_vector) / 4
         macro_averaged_f1_measure = sum(f1_vector) / 4
@@ -83,9 +87,9 @@ if __name__ == "__main__":
         print("\t-k <number>\t(Optional) Specify the number of folds (default is 10)")
     elif len(sys.argv) == 3:
         if sys.argv[1] == "-t":
-            train_models_k_fold(sys.argv[2])
+            train_models_k_fold(int(sys.argv[2]))
         elif sys.argv[1] == "-d":
-            generate_stats_for_k_fold(sys.argv[2])
+            generate_stats_for_k_fold(int(sys.argv[2]))
     elif len(sys.argv) == 2:
         if sys.argv[1] == "-t":
             train_models_k_fold()

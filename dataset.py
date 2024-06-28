@@ -36,6 +36,21 @@ class EmotionDataset(Dataset):
         emotion = torch.tensor(emotion, dtype=torch.long)
         return img, emotion
 
+def loadTestingData(json_file, section):
+    data = []
+    with open(json_file) as f:
+        data = json.load(f)
+    if section == 0:
+        return data[0:400]
+    if section == 1:
+        return data[400:800]
+    if section == 2:
+        return data[800:1200]
+    if section == 3:
+        return data[1200:1600]
+    return data[1600:2000]
+
+
 def loadData(json_file, num_training=1400, num_validation=300, num_testing=300, biased=False):
     data = []
     with open(json_file) as f:
@@ -45,11 +60,13 @@ def loadData(json_file, num_training=1400, num_validation=300, num_testing=300, 
         testing_idx = num_training + num_validation
 
     else:
-        validation_idx = (len(data)//10)*8
-        testing_idx = validation_idx+(len(data)//10)
+        return [], [], data
+        #validation_idx = (len(data)//10)*8
+        #testing_idx = validation_idx+(len(data)//10)
     training = data[:validation_idx]
     validation = data[validation_idx:testing_idx]
     testing = data[testing_idx:]
+    print(len(testing))
     return training, validation, testing
 
 
